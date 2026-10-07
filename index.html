@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Doll Machine — Manual</title>
+<meta name="description" content="User manual for Paper Doll Machine, a Unity editor tool that bakes a modular 3D character into a library of aligned 2D sprite sheets.">
+<style>
+  :root{
+    --paper:#ffffff; --panel:#f5f7fb; --panel-2:#eef2f8;
+    --ink:#17203a; --body:#2c3450;
+    --muted:#6a7490; --rule:#dde3ec;
+    --accent:#1f6f8b; --accent-soft:#e6f1f5; --accent-rule:#b9d7e2;
+    --warn:#8a5a00; --warn-soft:#fdf5e6; --warn-rule:#e8d3a4;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--panel-2); color:var(--body);
+    font-family:var(--sans); font-size:16px; line-height:1.62;
+  }
+  .sheet{
+    max-width:52rem; margin:0 auto; background:var(--paper);
+    padding:0 3.25rem 4rem; box-shadow:0 1px 3px rgba(23,32,58,.08);
+  }
+
+  /* ---------- cover ---------- */
+  .cover{ padding:3.5rem 0 2rem; border-bottom:3px solid var(--ink); margin-bottom:2.5rem; }
+  .eyebrow{
+    font-size:.74rem; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); font-weight:700; margin:0 0 .9rem;
+  }
+  h1{
+    font-size:2.9rem; line-height:1.08; letter-spacing:-.02em; color:var(--ink);
+    margin:0 0 .6rem; font-weight:700; text-wrap:balance;
+  }
+  .tagline{ font-size:1.18rem; color:var(--muted); margin:0 0 1.8rem; max-width:34rem; }
+  .meta{ display:flex; flex-wrap:wrap; gap:.5rem 2.2rem; font-size:.88rem; color:var(--muted); }
+  .meta b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- type ---------- */
+  h2{
+    font-size:1.5rem; color:var(--ink); letter-spacing:-.01em; font-weight:700;
+    margin:3rem 0 .4rem; padding-top:.6rem; border-top:1px solid var(--rule); text-wrap:balance;
+  }
+  h2 .num{ color:var(--accent); font-variant-numeric:tabular-nums; margin-right:.5rem; }
+  h3{ font-size:1.08rem; color:var(--ink); font-weight:700; margin:2rem 0 .3rem; text-wrap:balance; }
+  h4{ font-size:.95rem; color:var(--ink); font-weight:700; margin:1.4rem 0 .2rem; }
+  p{ margin:.7rem 0; }
+  ul,ol{ margin:.7rem 0; padding-left:1.35rem; }
+  li{ margin:.35rem 0; }
+  a{ color:var(--accent); }
+  code{
+    font-family:var(--mono); font-size:.875em; background:var(--panel);
+    border:1px solid var(--rule); border-radius:3px; padding:.08em .34em; color:var(--ink);
+  }
+  pre{
+    font-family:var(--mono); font-size:.82rem; line-height:1.55; background:var(--panel);
+    border:1px solid var(--rule); border-left:3px solid var(--accent);
+    border-radius:4px; padding:.9rem 1rem; overflow-x:auto; margin:1rem 0; color:var(--ink);
+  }
+  pre code{ background:none; border:0; padding:0; font-size:1em; }
+  strong{ color:var(--ink); }
+
+  /* ---------- toc ---------- */
+  .toc{ background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:1.3rem 1.6rem; margin:0 0 1rem; }
+  .toc h2{ margin:0 0 .6rem; border:0; padding:0; font-size:1.05rem; }
+  .toc ol{ margin:0; padding-left:1.4rem; columns:2; column-gap:2.4rem; font-size:.92rem; }
+  .toc li{ margin:.22rem 0; break-inside:avoid; }
+  .toc a{ text-decoration:none; color:var(--body); }
+  .toc a:hover{ color:var(--accent); text-decoration:underline; }
+
+  /* ---------- callouts ---------- */
+  .note,.warn{ border-radius:4px; padding:.85rem 1.1rem; margin:1.1rem 0; font-size:.94rem; }
+  .note{ background:var(--accent-soft); border:1px solid var(--accent-rule); }
+  .warn{ background:var(--warn-soft); border:1px solid var(--warn-rule); }
+  .note .lbl,.warn .lbl{
+    display:block; font-size:.7rem; letter-spacing:.13em; text-transform:uppercase;
+    font-weight:700; margin-bottom:.25rem;
+  }
+  .note .lbl{ color:var(--accent); } .warn .lbl{ color:var(--warn); }
+  .note p,.warn p{ margin:.3rem 0; }
+
+  /* ---------- tables ---------- */
+  .tw{ overflow-x:auto; margin:1.1rem 0; }
+  table{ border-collapse:collapse; width:100%; font-size:.9rem; }
+  th,td{ text-align:left; padding:.52rem .7rem; border-bottom:1px solid var(--rule); vertical-align:top; }
+  thead th{
+    background:var(--panel); color:var(--ink); font-weight:700; border-bottom:2px solid var(--rule);
+    font-size:.78rem; letter-spacing:.05em; text-transform:uppercase;
+  }
+  td code{ white-space:nowrap; }
+  tbody tr:last-child td{ border-bottom:0; }
+  .c-def{ color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  /* ---------- figures ---------- */
+  figure{ margin:1.5rem 0; break-inside:avoid; page-break-inside:avoid; }
+  figure img{
+    display:block; max-width:100%; height:auto; margin:0 auto;
+    border:1px solid var(--rule); border-radius:4px; background:var(--panel);
+  }
+  figcaption{
+    font-size:.85rem; color:var(--muted); margin-top:.6rem; text-align:center; font-style:italic;
+  }
+  figcaption b{ font-style:normal; color:var(--ink); }
+
+  /* ---------- steps ---------- */
+  .steps{ counter-reset:s; list-style:none; padding:0; margin:1.2rem 0; }
+  .steps > li{
+    counter-increment:s; position:relative; padding-left:2.6rem; margin:1rem 0;
+    break-inside:avoid;
+  }
+  .steps > li::before{
+    content:counter(s); position:absolute; left:0; top:.05rem;
+    width:1.75rem; height:1.75rem; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:.85rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .steps > li > strong{ display:block; }
+
+  footer{
+    margin-top:3.5rem; padding-top:1.2rem; border-top:1px solid var(--rule);
+    font-size:.85rem; color:var(--muted); display:flex; flex-wrap:wrap;
+    gap:.4rem 1.5rem; justify-content:space-between;
+  }
+
+  /* ---------- print ---------- */
+  @page{ size:A4; margin:18mm 16mm; }
+  @media print{
+    body{ background:#fff; font-size:10.5pt; }
+    .sheet{ box-shadow:none; max-width:none; padding:0; }
+    .cover{ padding-top:0; }
+    h1{ font-size:30pt; }
+    h2{ page-break-after:avoid; break-after:avoid; }
+    h3,h4{ page-break-after:avoid; break-after:avoid; }
+    table,figure,pre,.note,.warn,.steps>li{ page-break-inside:avoid; break-inside:avoid; }
+    thead{ display:table-header-group; }
+    a{ color:var(--ink); text-decoration:none; }
+    .toc{ page-break-after:always; break-after:page; }
+    figure img{ max-height:150mm; width:auto; }
+  }
+  @media (max-width:46rem){
+    .sheet{ padding:0 1.1rem 3rem; }
+    h1{ font-size:2.1rem; }
+    .toc ol{ columns:1; }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+<header class="cover">
+  <p class="eyebrow">Unity Editor Tool · User Manual</p>
+  <h1>Paper Doll Machine</h1>
+  <p class="tagline">Bake a modular 3D character into a library of perfectly aligned 2D sprite sheets — one sheet per body part, ready to layer at runtime.</p>
+  <div class="meta">
+    <span><b>Version</b> 1.0.0</span>
+    <span><b>Publisher</b> Paper Bird</span>
+    <span><b>Unity</b> 2022.2 or newer</span>
+    <span><b>Pipelines</b> Built-in &amp; URP</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">What this package does</a></li>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#install">Installation</a></li>
+    <li><a href="#quickstart">Quick start</a></li>
+    <li><a href="#concept">Slots, Index &amp; suffix pairing</a></li>
+    <li><a href="#baker">The Baker tab</a></li>
+    <li><a href="#advanced">Advanced options (bake)</a></li>
+    <li><a href="#bakestyle">The Bake Style asset</a></li>
+    <li><a href="#preview">The Preview tab</a></li>
+    <li><a href="#output">Output reference</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="overview"><span class="num">1</span>What this package does</h2>
+
+<p>Modular 3D characters are built from interchangeable parts — a head, a chest, a left boot, a right boot, a cape. <strong>Paper Doll Machine</strong> renders each of those parts into its own 2D sprite sheet, with every sheet framed identically, so you can stack them back together at runtime and swap any single part without re-exporting anything else.</p>
+
+<p>That is what makes it a paper-doll pipeline rather than a plain sprite exporter: because all sheets share one camera framing, the boots from outfit A line up pixel-for-pixel with the chest from outfit B, in every animation and every direction.</p>
+
+<h3>What you get</h3>
+<ul>
+  <li><strong>Modular Library Baker</strong> — the main editor window. Assign your character, list the parts, pick the animations, press one button.</li>
+  <li><strong>Built-in Preview tab</strong> — stack the baked sheets and scrub or play the animation inside Unity, before you write a single line of game code.</li>
+  <li><strong>Bake Style asset</strong> — a reusable lighting, color and outline profile, so every bake in your project shares one consistent look.</li>
+  <li><strong>Supersampling (1–8×)</strong> with premultiplied-alpha downscaling — smooth sprite edges with no dark halo.</li>
+  <li><strong>Ground shadow pass</strong>, 8-direction output, Loop/OneShot aware frame sampling, and a JSON manifest describing everything that was produced.</li>
+</ul>
+
+<h3>Typical uses</h3>
+<ul>
+  <li>Isometric or top-down RPGs with equipment the player can see and change.</li>
+  <li>Turning an existing modular 3D character pack into 2D assets.</li>
+  <li>Producing a consistent sprite library for prototypes without hand-drawing every outfit combination.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="requirements"><span class="num">2</span>Requirements</h2>
+
+<div class="tw"><table>
+  <thead><tr><th>Item</th><th>Requirement</th></tr></thead>
+  <tbody>
+    <tr><td>Unity</td><td>2022.2 or newer</td></tr>
+    <tr><td>Render pipeline</td><td>Built-in or URP</td></tr>
+    <tr><td>Character rig</td><td>An <code>Animator</code> with a <strong>Humanoid</strong> Avatar</td></tr>
+    <tr><td>Character structure</td><td>Parts as separate child GameObjects that can be shown/hidden</td></tr>
+    <tr><td>Animations</td><td>One or more <code>AnimationClip</code> assets that play on that rig</td></tr>
+  </tbody>
+</table></div>
+
+<div class="note">
+  <span class="lbl">How parts are isolated</span>
+  <p>To render one part on its own, the tool toggles <code>GameObject.SetActive</code> on the part objects — the same mechanism most modular character packs already use to switch variants. Your parts therefore need to be <strong>separate child GameObjects</strong>, not sub-meshes of a single combined mesh.</p>
+</div>
+
+<div class="warn">
+  <span class="lbl">No character is included</span>
+  <p>This package contains the tool only. Use it with your own modular character, or with one from any third-party pack you own.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="install"><span class="num">3</span>Installation</h2>
+
+<ol>
+  <li>Import the package into your project. Everything lands in a single <code>Paper Doll Machine</code> folder.</li>
+  <li>Wait for Unity to finish compiling.</li>
+  <li>Open the tool from the menu bar: <strong>Paper Doll Machine ▸ Modular Library Baker</strong>.</li>
+</ol>
+
+<p>The package ships as two assembly definitions — a small runtime assembly and an editor-only one — so it compiles independently of your own scripts and is excluded from builds where appropriate.</p>
+
+<!-- ============================================================ -->
+<h2 id="quickstart"><span class="num">4</span>Quick start</h2>
+
+<p>This is the shortest path from a character in your scene to a folder of sprite sheets.</p>
+
+<ol class="steps">
+  <li><strong>Put your character in the scene</strong>
+     and assemble it the way you want it to look by default. The framing is computed from this assembled state.</li>
+  <li><strong>Open Paper Doll Machine ▸ Modular Library Baker</strong>
+     and drag the character's root GameObject into the <em>Character</em> field.</li>
+  <li><strong>Fill the Slots</strong>
+     by selecting the part GameObjects in the Hierarchy and dropping them onto a slot's drop area. You can select many at once and drop them all together.</li>
+  <li><strong>Add your animations</strong>
+     in the <em>Animations</em> section, then mark each one <code>Loop</code> or <code>OneShot</code>.</li>
+  <li><strong>Choose an output folder</strong>
+     under <em>Output</em>. Keep it inside <code>Assets/</code> so Unity imports the results automatically.</li>
+  <li><strong>Press “Generate Modular Spritesheet”.</strong>
+     A progress bar shows each entry as it is baked; you can cancel at any time.</li>
+  <li><strong>Check the result</strong>
+     in the <em>Preview</em> tab: drop the baked PNGs in, set the grid to match, and press Play.</li>
+</ol>
+
+<figure>
+  <img src="Images/doc1.png" alt="The Modular Library Baker window on the Baker tab, showing the Character field, the Modularity dropdown and the list of part slots.">
+  <figcaption><b>Figure 1.</b> The Baker tab. Each slot has a name, an Index and a drop area that accepts multiple objects at once.</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2 id="concept"><span class="num">5</span>Slots, Index &amp; suffix pairing</h2>
+
+<p>This is the one concept worth reading in full. Everything else in the window is ordinary settings.</p>
+
+<h3>A slot is a list of interchangeable variants</h3>
+<p>A slot such as <em>Chest</em> holds every chest piece your character can wear. Each variant you drop into it becomes <strong>its own sprite sheet</strong>, so at runtime you pick one chest sheet and draw it.</p>
+
+<h3>The Index decides what gets baked together</h3>
+<p>Every slot carries an <strong>Index</strong> number. The rule is simple:</p>
+<ul>
+  <li><strong>Index used by one slot</strong> → each variant in that slot becomes one sprite on its own.</li>
+  <li><strong>Index shared by two or more slots</strong> → those slots are baked <em>together</em> into a single sprite, matched up by the number at the end of each object's name.</li>
+</ul>
+
+<p>The second case exists for parts that only make sense as a set. Boots are the classic example: you almost never want the left boot of one style with the right boot of another. Give <em>Boot Left</em> and <em>Boot Right</em> the same Index and the tool pairs them automatically:</p>
+
+<pre><code>Boot Left   (Index 15)        Boot Right  (Index 15)
+  Chr_BootLeft_05               Chr_BootRight_05      →  Boot_05.png
+  Chr_BootLeft_07               Chr_BootRight_07      →  Boot_07.png</code></pre>
+
+<p>The pairing key is the <strong>trailing number</strong> of the object name — <code>05</code> matches <code>05</code>, <code>07</code> matches <code>07</code>. The resulting sprite is named after the longest common prefix of the slot labels (<em>Boot Left</em> + <em>Boot Right</em> → <code>Boot</code>), followed by that number.</p>
+
+<div class="note">
+  <span class="lbl">Naming matters</span>
+  <p>Suffix pairing only works when the matching parts end with the same number. If your parts are named differently, either rename them or keep the slots on separate Index values and handle the pairing in your own runtime code.</p>
+</div>
+
+<h3>Single-slot naming</h3>
+<p>When an Index belongs to just one slot, each sprite is named after the slot label plus the part's trailing number, if it has one:</p>
+<pre><code>Chest (Index 4)
+  Chr_Chest_02   →  Chest_02.png
+  Chr_Chest_09   →  Chest_09.png</code></pre>
+
+<p>The window ships with 17 ready-made slots (Head, Mask, Head Accessory, Cape, Chest, Shoulder L/R, Biceps L/R, Forearm L/R, Elbow L/R, Glove L/R, Boot L/R). Rename them, change their Index, delete the ones you don't need, or press <em>Restore defaults</em> to bring the original list back.</p>
+
+<!-- ============================================================ -->
+<h2 id="baker"><span class="num">6</span>The Baker tab</h2>
+
+<h3>Character</h3>
+<p>The root GameObject of your modular character. It must contain an <code>Animator</code> with a Humanoid Avatar somewhere in its hierarchy.</p>
+
+<h3>Modularity</h3>
+<div class="tw"><table>
+  <thead><tr><th>Mode</th><th>What it bakes</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Full Character And Weapon</strong></td><td>Uses the Slots list. Every part (or paired set) becomes its own sheet, plus one sheet per weapon and shield. This is the full paper-doll workflow.</td></tr>
+    <tr><td><strong>Only Weapon Modular</strong></td><td>Ignores the Slots entirely. Bakes the character exactly as currently assembled into a single <code>Body</code> sheet, plus one sheet per weapon and shield. Use this when only the equipment needs to change.</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Slots</h3>
+<p>Covered in <a href="#concept">section 5</a>. Each row offers a name field, an Index field, a remove button and a drop area. Within a slot you can sort the list alphabetically or clear it.</p>
+
+<h3>Animations</h3>
+<p>Drop one or more <code>AnimationClip</code> assets here — several at once if you like. Every clip is baked for every entry, so ten parts across four animations produces forty sheets.</p>
+
+<p>Each clip is tagged <strong>Loop</strong> or <strong>OneShot</strong>, and the tag changes how frame times are sampled:</p>
+<div class="tw"><table>
+  <thead><tr><th>Tag</th><th>Use for</th><th>Sampling</th></tr></thead>
+  <tbody>
+    <tr><td><code>Loop</code></td><td>Idle, walk, run</td><td>Excludes the final instant, because frame 0 is the loop point. Prevents a duplicated frame and makes the cycle stitch seamlessly.</td></tr>
+    <tr><td><code>OneShot</code></td><td>Attack, death, cast</td><td>Includes the final instant, so the sprite holds the finished pose.</td></tr>
+  </tbody>
+</table></div>
+<p>Clips arrive as <code>OneShot</code> when dropped; switch the ones that cycle to <code>Loop</code>.</p>
+
+<h3>Weapons / Shields</h3>
+<p>Drop weapon and shield GameObjects here. Each becomes its own sheet and is filed under a <code>weapon/</code> or <code>shield/</code> subfolder. They are included in the shared framing calculation, so a long spear will not be clipped.</p>
+
+<h3>Output</h3>
+<div class="tw"><table>
+  <thead><tr><th>Setting</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Sprites folder</strong></td><td>Destination folder. Keep it inside <code>Assets/</code> so Unity imports the PNGs; <em>Browse</em> converts an absolute path automatically.</td></tr>
+    <tr><td><strong>Split by direction</strong></td><td>Off: one sheet containing every direction. On: one strip file per direction, named with the compass direction.</td></tr>
+    <tr><td><strong>Organize in folders</strong></td><td>Creates one subfolder per animation, keeping large libraries navigable.</td></tr>
+  </tbody>
+</table></div>
+
+<figure>
+  <img src="Images/doc3.png" alt="Lower half of the Baker tab showing the end of the slot list, the Animations section, Weapons and Shields, the Output settings and the Generate button.">
+  <figcaption><b>Figure 2.</b> The lower half of the Baker tab: Animations, Weapons / Shields, Output, and the Generate button.</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2 id="advanced"><span class="num">7</span>Advanced options (bake)</h2>
+
+<p>Sensible defaults are already set; open this section when you need to change the camera, the sheet resolution or the shadow.</p>
+
+<figure>
+  <img src="Images/doc4.png" alt="The Advanced options section expanded, showing projection, camera, grid, cell size, supersample, framing and ground shadow settings.">
+  <figcaption><b>Figure 3.</b> Advanced options, with the ground shadow pass enabled.</figcaption>
+</figure>
+
+<div class="tw"><table>
+  <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Projection</strong></td><td class="c-def">Isometric</td><td>Chooses the camera angle preset. <code>Isometric</code> for classic 2:1 iso; <code>Top Down</code> for a steeper overhead view.</td></tr>
+    <tr><td><strong>Iso / TopDown Elevation</strong></td><td class="c-def">30 / 60</td><td>Camera pitch in degrees. Only the field for the active projection is shown; each projection remembers its own value, so switching back and forth never loses a calibrated angle.</td></tr>
+    <tr><td><strong>Camera Yaw</strong></td><td class="c-def">45</td><td>Camera rotation around the vertical axis. Shared by both projections. 45° is the classic isometric angle.</td></tr>
+    <tr><td><strong>Directions</strong></td><td class="c-def">8</td><td>How many facings to render. The character is rotated evenly through a full turn; 8 gives the usual eight-way movement.</td></tr>
+    <tr><td><strong>Frames</strong></td><td class="c-def">16</td><td>Frames sampled per animation, per direction.</td></tr>
+    <tr><td><strong>In Place</strong></td><td class="c-def">On</td><td>Pins the character to its start position each frame, so root motion does not drift the sprite out of the cell.</td></tr>
+    <tr><td><strong>Cell Width / Height</strong></td><td class="c-def">128 / 256</td><td>Pixel size of one frame. The sheet is <code>Frames × Cell Width</code> by <code>Directions × Cell Height</code>.</td></tr>
+    <tr><td><strong>Supersample (SSAA)</strong></td><td class="c-def">1</td><td>Renders at N× the cell resolution and downscales. Edges come out noticeably cleaner, and because the downscale works in premultiplied alpha there is no dark fringe. 2–4 is a good range; 8 is maximum quality and slowest. The factor is reduced automatically if it would exceed your GPU's texture limit.</td></tr>
+    <tr><td><strong>Framing</strong></td><td class="c-def">Original Size</td><td><code>Original Size</code> keeps the character's real proportions. <code>Resize To Fit</code> expands it to fill the cell.</td></tr>
+    <tr><td><strong>Padding</strong></td><td class="c-def">1.15</td><td>Breathing room around the character. Raise it if an animation reaches outside the frame.</td></tr>
+    <tr><td><strong>Background</strong></td><td class="c-def">Transparent</td><td>Sheet background color. Leave fully transparent for normal use.</td></tr>
+    <tr><td><strong>BakeStyle</strong></td><td class="c-def">None</td><td>Optional lighting and color profile — see <a href="#bakestyle">section 8</a>.</td></tr>
+    <tr><td><strong>Bake Ground Shadow</strong></td><td class="c-def">Off</td><td>Produces an extra <code>shadow</code> sheet: the whole assembled character flattened onto the ground. Draw it beneath the character layers at runtime.</td></tr>
+    <tr><td><strong>Shadow Color / Strength / Flatten / Blur</strong></td><td class="c-def">black / 0.45 / 0.04 / 2</td><td>Shadow tint, opacity, how flat the silhouette is squashed, and how soft its edge is.</td></tr>
+  </tbody>
+</table></div>
+
+<div class="note">
+  <span class="lbl">Why everything lines up</span>
+  <p>Framing is calculated <strong>once</strong>, from the assembled character across all selected animations, and then reused for every entry. That single shared frame is what guarantees parts baked in different sessions still stack correctly — as long as the character's base assembly and these settings stay the same.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="bakestyle"><span class="num">8</span>The Bake Style asset</h2>
+
+<p>A Bake Style is a reusable look: lighting, rim light, color grading and outline. Assign the same asset to every bake and your whole library stays visually consistent.</p>
+
+<p>Create one with <strong>Assets ▸ Create ▸ Paper Doll Machine ▸ Bake Style</strong>, then drop it into the <em>BakeStyle</em> field in Advanced options.</p>
+
+<figure>
+  <img src="Images/BakeStyle.png" alt="The Bake Style asset shown in the Inspector, with lighting, rim light, material override, color and outline sections.">
+  <figcaption><b>Figure 4.</b> A Bake Style asset in the Inspector.</figcaption>
+</figure>
+
+<h3>Lighting — 3-point (key / fill / rim)</h3>
+<p>When <strong>Create Lights</strong> is on, the tool builds a temporary light rig <em>oriented by the camera</em>, so every direction is lit identically — no part looks darker just because the character turned. This also fixes the common problem of sprites baking out too dark.</p>
+<div class="tw"><table>
+  <thead><tr><th>Setting</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Key</strong> (Euler / Color / Intensity)</td><td>The main light, positioned relative to the camera.</td></tr>
+    <tr><td><strong>Fill Light</strong></td><td>Softens shadows from the opposite side. Turn it down for higher contrast, up for a flatter look.</td></tr>
+    <tr><td><strong>Cast Shadows</strong> + <strong>Shadow Strength</strong></td><td>Lets the key light cast the part's shadow onto itself, darkening recesses and adding directional relief. Each part is baked in isolation, so it only ever shadows itself.</td></tr>
+    <tr><td><strong>Ambient Color</strong></td><td>Ambient light used during the bake. Restored afterwards.</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Rim light</h3>
+<p>A back light that traces the silhouette, separating the character from the background. On by default.</p>
+
+<h3>Material override</h3>
+<p>Point <strong>Override Material</strong> at a material — a toon shader, for example — and every part is rendered with it, keeping each original base texture. Leave it empty to use the real materials.</p>
+
+<h3>Color &amp; Outline</h3>
+<p><strong>Saturation</strong>, <strong>Contrast</strong>, <strong>Brightness</strong> and <strong>Tint</strong> are applied to the finished pixels. <strong>Outline</strong> traces the sprite's silhouette in a solid color at a width of 1–4 pixels.</p>
+
+<div class="note">
+  <span class="lbl">Not visible in the Scene view</span>
+  <p>Color grading and the outline are 2D post-processing — they exist only in the baked image, never in the Scene view. To judge them quickly, bake one animation with a low frame count as a test before committing to the full library.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="preview"><span class="num">9</span>The Preview tab</h2>
+
+<p>The Preview tab assembles baked sheets back into a character so you can check alignment and timing without leaving Unity.</p>
+
+<figure>
+  <img src="Images/doc5.png" alt="The Preview tab showing the sheet grid settings, the layer list, direction and frame sliders, Play button and the checkerboard viewport.">
+  <figcaption><b>Figure 5.</b> The Preview tab, ready to receive baked sheets.</figcaption>
+</figure>
+
+<ol class="steps">
+  <li><strong>Match the grid</strong>
+     — press <em>= Baker</em> to copy Directions, Frames and cell size straight from the Baker tab.</li>
+  <li><strong>Drop your sheets</strong>
+     into the Layers list, several at once.</li>
+  <li><strong>Order the layers</strong>
+     with ↑ / ↓. The list order is the draw order: <strong>top of the list draws behind</strong>, bottom draws in front. The checkbox hides a layer without removing it.</li>
+  <li><strong>Inspect</strong>
+     — step through directions with ‹ / › or the slider, scrub frames, or press <em>Play</em> and set the FPS.</li>
+</ol>
+
+<p>Toggle the checkerboard background off to judge the sprite against a solid color of your choosing.</p>
+
+<!-- ============================================================ -->
+<h2 id="output"><span class="num">10</span>Output reference</h2>
+
+<h3>Sheet layout</h3>
+<p>A sheet is a grid of cells. <strong>Frames run left to right; directions run top to bottom</strong>, with direction 0 on the top row.</p>
+<pre><code>sheet width  = Frames     × Cell Width
+sheet height = Directions × Cell Height</code></pre>
+<p>With the defaults (16 frames, 8 directions, 128×256 cells) that is a 2048 × 2048 sheet.</p>
+
+<h3>Direction order</h3>
+<p>Row 0 is South, and rows continue counter-clockwise:</p>
+<pre><code>row 0  South        row 4  North
+row 1  SouthWest    row 5  NorthEast
+row 2  West         row 6  East
+row 3  NorthWest    row 7  SouthEast</code></pre>
+<p>These names are used in filenames when <em>Split by direction</em> is on. If you bake more directions than there are names, the extras are numbered <code>dir8</code>, <code>dir9</code>, and so on.</p>
+
+<h3>File names</h3>
+<pre><code>&lt;animation&gt;_&lt;entry&gt;.png                 e.g.  Walk_Chest_02.png
+&lt;animation&gt;_&lt;entry&gt;_&lt;Direction&gt;.png     e.g.  Walk_Chest_02_South.png   (split by direction)</code></pre>
+
+<h3>Folder structure</h3>
+<p>With <em>Organize in folders</em> enabled:</p>
+<pre><code>Assets/GeneratedSprites/
+├─ Walk/
+│  ├─ Walk_Chest_02.png          ← body parts sit directly in the animation folder
+│  ├─ Walk_Boot_05.png
+│  ├─ weapon/
+│  │  └─ Walk_Sword_01.png
+│  ├─ shield/
+│  │  └─ Walk_RoundShield.png
+│  └─ shadow/
+│     └─ Walk_shadow.png
+├─ Attack/
+│  └─ …
+└─ MyCharacter_library.json</code></pre>
+
+<h3>The manifest</h3>
+<p>Every bake writes <code>&lt;Character&gt;_library.json</code> to the output folder, describing exactly what was produced. Read it at runtime, or in a build script, to discover the library instead of hard-coding file names:</p>
+<pre><code>{
+  "character": "MyCharacter",
+  "mode": "FullCharacterAndWeapon",
+  "directions": 8,
+  "frames": 16,
+  "cell_w": 128,
+  "cell_h": 256,
+  "split_by_direction": false,
+  "organize_in_folders": true,
+  "entries": [
+    { "name": "Chest_02", "type": "piece" },
+    { "name": "Boot_05",  "type": "piece" },
+    { "name": "Sword_01", "type": "weapon" }
+  ],
+  "animations": ["Walk", "Attack"]
+}</code></pre>
+<p>Entry types are <code>piece</code>, <code>body</code>, <code>weapon</code>, <code>shield</code> and <code>shadow</code>.</p>
+
+<h3>Importing the sheets</h3>
+<p>Set the imported textures to <strong>Sprite (2D and UI)</strong> with <strong>Sprite Mode: Multiple</strong>, then slice them by cell size using your Cell Width and Cell Height. For crisp pixel results, set Filter Mode to <strong>Point</strong> and turn compression off.</p>
+
+<!-- ============================================================ -->
+<h2 id="troubleshooting"><span class="num">11</span>Troubleshooting</h2>
+
+<p>The tool reports problems to the Unity Console. Each message below names its cause and fix.</p>
+
+<div class="tw"><table>
+  <thead><tr><th>Console message</th><th>Cause &amp; fix</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>The character requires an Animator (Humanoid Avatar).</code></td>
+      <td>No <code>Animator</code> was found on the character or its children, so animations cannot be sampled. Add one and set the model's Rig to <strong>Humanoid</strong>.</td>
+    </tr>
+    <tr>
+      <td><code>Set the character and at least one animation.</code></td>
+      <td>The Character field is empty, or no clip was added. Both are required.</td>
+    </tr>
+    <tr>
+      <td><code>No entries to bake (fill in the slots or the weapons).</code></td>
+      <td>Nothing was dropped into the slots, weapons or shields, so there is nothing to render. In <em>Only Weapon Modular</em> mode, check that the character has visible renderers.</td>
+    </tr>
+    <tr>
+      <td><code>The character has no renderers.</code></td>
+      <td>The assigned object contains no renderers at all. Confirm you assigned the character root and not an empty parent.</td>
+    </tr>
+    <tr>
+      <td><code>Folder outside Assets/ — the PNGs will not be imported as assets</code></td>
+      <td>The output folder is outside the project. The files are still written, but Unity will not import them. Choose a folder inside <code>Assets/</code>.</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<h3>Other symptoms</h3>
+<div class="tw"><table>
+  <thead><tr><th>Symptom</th><th>What to check</th></tr></thead>
+  <tbody>
+    <tr><td>A sheet comes out empty</td><td>The part's parent is probably inactive. The tool activates the part itself, but not its ancestors — make sure the chain above it is enabled.</td></tr>
+    <tr><td>The character is clipped at the frame edge</td><td>Raise <strong>Padding</strong>, or switch Framing to <code>Resize To Fit</code>.</td></tr>
+    <tr><td>Parts do not line up with each other</td><td>The base assembly or the bake settings changed between bakes. Re-bake the whole library with identical settings.</td></tr>
+    <tr><td>Sprites look dark</td><td>Assign a Bake Style with <strong>Create Lights</strong> enabled; the bake then no longer depends on your scene lighting.</td></tr>
+    <tr><td>Edges look jagged</td><td>Raise <strong>Supersample</strong> to 2–4.</td></tr>
+    <tr><td>Character drifts out of frame during an animation</td><td>Enable <strong>In Place</strong> to cancel root motion.</td></tr>
+    <tr><td>The looping animation stutters</td><td>Tag the clip <code>Loop</code> instead of <code>OneShot</code> so the duplicated final frame is dropped.</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ============================================================ -->
+<h2 id="faq"><span class="num">12</span>FAQ</h2>
+
+<h4>Does this work with any modular character?</h4>
+<p>Yes, provided the parts are separate child GameObjects that can be toggled and the rig is Humanoid. The tool makes no assumptions about which character pack you use.</p>
+
+<h4>Do I have to re-bake everything when I add one new part?</h4>
+<p>No. Bake the new part on its own; because framing is deterministic, it will line up with the sheets you already have — as long as the base assembly and the bake settings are unchanged. Make a note of the settings you used so a later bake can reproduce them exactly.</p>
+
+<h4>Can I bake more than 8 directions?</h4>
+<p>Yes, up to 16. Directions beyond the eight named compass points are numbered instead.</p>
+
+<h4>Does it run at runtime?</h4>
+<p>No. Baking is an editor-time process; the output is ordinary PNG files that you use however you like at runtime.</p>
+
+<h4>Does it generate Animator Controllers or prefabs?</h4>
+<p>No. It produces sprite sheets plus a JSON manifest, leaving you free to drive them with whatever animation system your project uses.</p>
+
+<h4>Which render pipelines are supported?</h4>
+<p>Built-in and URP. Post-processing is disabled on the bake camera so effects in your scene cannot contaminate the sprites.</p>
+
+<footer>
+  <span>Paper Doll Machine 1.0.0 — © 2026 Paper Bird. All rights reserved.</span>
+  <span>Licensed under the Unity Asset Store EULA.</span>
+</footer>
+
+</main>
+</body>
+</html>
