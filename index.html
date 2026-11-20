@@ -158,7 +158,7 @@
   <div class="meta">
     <span><b>Version</b> 1.0.0</span>
     <span><b>Publisher</b> Paper Bird</span>
-    <span><b>Unity</b> 2022.2 or newer</span>
+    <span><b>Unity</b> 6000.4 (Unity 6.4) or newer</span>
     <span><b>Pipelines</b> Built-in &amp; URP</span>
   </div>
 </header>
@@ -168,13 +168,13 @@
   <ol>
     <li><a href="#overview">What this package does</a></li>
     <li><a href="#requirements">Requirements</a></li>
-    <li><a href="#install">Installation</a></li>
+    <li><a href="#install">Installation &amp; examples</a></li>
     <li><a href="#quickstart">Quick start</a></li>
     <li><a href="#concept">Slots, Index &amp; suffix pairing</a></li>
     <li><a href="#baker">The Baker tab</a></li>
-    <li><a href="#advanced">Advanced options (bake)</a></li>
+    <li><a href="#camera">Camera, style &amp; quality</a></li>
     <li><a href="#bakestyle">The Bake Style asset</a></li>
-    <li><a href="#preview">The Preview tab</a></li>
+    <li><a href="#preview">The Preview Sheets tab</a></li>
     <li><a href="#output">Output reference</a></li>
     <li><a href="#troubleshooting">Troubleshooting</a></li>
     <li><a href="#faq">FAQ</a></li>
@@ -190,11 +190,13 @@
 
 <h3>What you get</h3>
 <ul>
-  <li><strong>Modular Library Baker</strong> — the main editor window. Assign your character, list the parts, pick the animations, press one button.</li>
-  <li><strong>Built-in Preview tab</strong> — stack the baked sheets and scrub or play the animation inside Unity, before you write a single line of game code.</li>
+  <li><strong>Modular Library Baker</strong> — the main editor window. A section list shows what is set up and what is still missing, and the footer tells you when the bake is ready and how many sheets it will write.</li>
+  <li><strong>Preview Sheets tab</strong> — stack the baked sheets and step through rows, scrub or play the animation inside Unity, at real size or zoomed with sharp pixels.</li>
   <li><strong>Bake Style asset</strong> — a reusable lighting, color and outline profile, so every bake in your project shares one consistent look.</li>
+  <li><strong>Isolated bakes</strong> — only the character, weapons and shields you assign are rendered. Other characters, the ground and props in your scene are hidden while the bake runs.</li>
   <li><strong>Supersampling (1–8×)</strong> with premultiplied-alpha downscaling — smooth sprite edges with no dark halo.</li>
-  <li><strong>Ground shadow pass</strong>, 8-direction output, Loop/OneShot aware frame sampling, and a JSON manifest describing everything that was produced.</li>
+  <li><strong>Ground shadow pass</strong>, up to 16 directions, Loop/One-shot aware frame sampling, and a JSON manifest describing everything that was produced.</li>
+  <li><strong>Two example characters</strong> (Warrior and Mage) with animations, ready-made prefabs, a sample scene and their baked sprite libraries.</li>
 </ul>
 
 <h3>Typical uses</h3>
@@ -210,7 +212,7 @@
 <div class="tw"><table>
   <thead><tr><th>Item</th><th>Requirement</th></tr></thead>
   <tbody>
-    <tr><td>Unity</td><td>2022.2 or newer</td></tr>
+    <tr><td>Unity</td><td>6000.4 (Unity 6.4) or newer</td></tr>
     <tr><td>Render pipeline</td><td>Built-in or URP</td></tr>
     <tr><td>Character rig</td><td>An <code>Animator</code> with a <strong>Humanoid</strong> Avatar</td></tr>
     <tr><td>Character structure</td><td>Parts as separate child GameObjects that can be shown/hidden</td></tr>
@@ -221,49 +223,57 @@
 <div class="note">
   <span class="lbl">How parts are isolated</span>
   <p>To render one part on its own, the tool toggles <code>GameObject.SetActive</code> on the part objects — the same mechanism most modular character packs already use to switch variants. Your parts therefore need to be <strong>separate child GameObjects</strong>, not sub-meshes of a single combined mesh.</p>
-</div>
-
-<div class="warn">
-  <span class="lbl">No character is included</span>
-  <p>This package contains the tool only. Use it with your own modular character, or with one from any third-party pack you own.</p>
+  <p>Everything else in your open scenes — other characters, the ground, props, terrains — is hidden while the bake runs and shown again when it finishes. Nothing is saved to the scene, so you can bake a character that stands next to others.</p>
 </div>
 
 <!-- ============================================================ -->
-<h2 id="install"><span class="num">3</span>Installation</h2>
+<h2 id="install"><span class="num">3</span>Installation &amp; examples</h2>
 
 <ol>
   <li>Import the package into your project. Everything lands in a single <code>Paper Doll Machine</code> folder.</li>
   <li>Wait for Unity to finish compiling.</li>
-  <li>Open the tool from the menu bar: <strong>Paper Doll Machine ▸ Modular Library Baker</strong>.</li>
+  <li>Open the tool from the menu bar: <strong>Tools ▸ Paper Bird ▸ Paper Doll Machine ▸ Modular Library Baker</strong>.</li>
 </ol>
 
 <p>The package ships as two assembly definitions — a small runtime assembly and an editor-only one — so it compiles independently of your own scripts and is excluded from builds where appropriate.</p>
 
+<div class="note">
+  <span class="lbl">Example characters</span>
+  <p><code>Paper Doll Machine/Examples</code> contains two modular characters, <strong>Warrior</strong> and <strong>Mage</strong>: models, prefabs with an Animator already set up, animator controllers, and the sprite libraries baked from them. <code>Paper Doll Machine/Scene/Sample.unity</code> has both characters placed and ready to bake. Delete the Examples folder once you no longer need it.</p>
+</div>
+
 <!-- ============================================================ -->
 <h2 id="quickstart"><span class="num">4</span>Quick start</h2>
 
-<p>This is the shortest path from a character in your scene to a folder of sprite sheets.</p>
+<p>This is the shortest path from a character in your scene to a folder of sprite sheets. To try it first, drag <code>Examples/Prefabs/Warrior</code> into a scene and follow along.</p>
 
 <ol class="steps">
   <li><strong>Put your character in the scene</strong>
      and assemble it the way you want it to look by default. The framing is computed from this assembled state.</li>
-  <li><strong>Open Paper Doll Machine ▸ Modular Library Baker</strong>
-     and drag the character's root GameObject into the <em>Character</em> field.</li>
-  <li><strong>Fill the Slots</strong>
-     by selecting the part GameObjects in the Hierarchy and dropping them onto a slot's drop area. You can select many at once and drop them all together.</li>
+  <li><strong>Open Tools ▸ Paper Bird ▸ Paper Doll Machine ▸ Modular Library Baker</strong>
+     and drag the character's root GameObject into the <em>Character</em> field. The window confirms the Animator and counts the renderers it found.</li>
+  <li><strong>Fill the Part Slots</strong>
+     by selecting the part GameObjects in the Hierarchy and dropping them onto a slot's <em>Drop</em> button. You can select many at once and drop them all together.</li>
   <li><strong>Add your animations</strong>
-     in the <em>Animations</em> section, then mark each one <code>Loop</code> or <code>OneShot</code>.</li>
+     in <em>Animations</em>, then set each one to <code>Loop</code> or <code>One-shot</code>.</li>
   <li><strong>Choose an output folder</strong>
-     under <em>Output</em>. Keep it inside <code>Assets/</code> so Unity imports the results automatically.</li>
-  <li><strong>Press “Generate Modular Spritesheet”.</strong>
-     A progress bar shows each entry as it is baked; you can cancel at any time.</li>
+     in <em>Output</em>. Keep it inside <code>Assets/</code> so Unity imports the results automatically.</li>
+  <li><strong>Press “Generate Sprite Library”</strong>
+     at the bottom of the section list. A progress bar shows each entry as it is baked; you can cancel at any time.</li>
   <li><strong>Check the result</strong>
-     in the <em>Preview</em> tab: drop the baked PNGs in, set the grid to match, and press Play.</li>
+     in the <em>Preview Sheets</em> tab: drop the baked PNGs in, set Directions and Frames, and press Play.</li>
 </ol>
 
 <figure>
-  <img src="Images/doc1.png" alt="The Modular Library Baker window on the Baker tab, showing the Character field, the Modularity dropdown and the list of part slots.">
-  <figcaption><b>Figure 1.</b> The Baker tab. Each slot has a name, an Index and a drop area that accepts multiple objects at once.</figcaption>
+  <img src="Images/baker-character.png" alt="The Modular Library Baker window on the Baker tab, with the section list on the left, the Character section open and the footer showing Ready to bake and the Generate Sprite Library button.">
+  <figcaption><b>Figure 1.</b> The Baker tab. Each entry in the section list shows a summary and a status dot; the footer shows whether the bake is ready and how many sheets it will write.</figcaption>
+</figure>
+
+<p>While something is missing, the footer lists the steps left and the Generate button stays disabled, so a bake never starts half set up.</p>
+
+<figure>
+  <img src="Images/baker-steps-left.png" alt="The footer of the Baker tab showing 2 steps left before baking: Assign a character, Add at least one animation clip. The Generate button is disabled.">
+  <figcaption><b>Figure 2.</b> The footer lists what is still missing. Amber dots mark the sections that need attention.</figcaption>
 </figure>
 
 <!-- ============================================================ -->
@@ -278,7 +288,7 @@
 <p>Every slot carries an <strong>Index</strong> number. The rule is simple:</p>
 <ul>
   <li><strong>Index used by one slot</strong> → each variant in that slot becomes one sprite on its own.</li>
-  <li><strong>Index shared by two or more slots</strong> → those slots are baked <em>together</em> into a single sprite, matched up by the number at the end of each object's name.</li>
+  <li><strong>Index shared by two or more slots</strong> → those slots are baked <em>together</em> into a single sprite, matched up by the number at the end of each object's name. The table marks those slots as <strong>Paired</strong>.</li>
 </ul>
 
 <p>The second case exists for parts that only make sense as a set. Boots are the classic example: you almost never want the left boot of one style with the right boot of another. Give <em>Boot Left</em> and <em>Boot Right</em> the same Index and the tool pairs them automatically:</p>
@@ -287,7 +297,12 @@
   Chr_BootLeft_05               Chr_BootRight_05      →  Boot_05.png
   Chr_BootLeft_07               Chr_BootRight_07      →  Boot_07.png</code></pre>
 
-<p>The pairing key is the <strong>trailing number</strong> of the object name — <code>05</code> matches <code>05</code>, <code>07</code> matches <code>07</code>. The resulting sprite is named after the longest common prefix of the slot labels (<em>Boot Left</em> + <em>Boot Right</em> → <code>Boot</code>), followed by that number.</p>
+<p>The pairing key is the <strong>trailing number</strong> of the object name — <code>05</code> matches <code>05</code>, <code>07</code> matches <code>07</code>. Parts with no trailing number pair with each other. The resulting sprite is named after the longest common prefix of the slot labels (<em>Boot Left</em> + <em>Boot Right</em> → <code>Boot</code>), followed by that number.</p>
+
+<figure>
+  <img src="Images/baker-part-slots.png" alt="The Part Slots section with six slots for the Warrior example: Head, Torso, Arm Left and Arm Right sharing Index 2, Leg Left and Leg Right sharing Index 3, the paired slots marked Paired.">
+  <figcaption><b>Figure 3.</b> Part Slots for the Warrior example. Arm Left/Right and Leg Left/Right share an Index, so each pair bakes into one sprite: <code>Arm</code> and <code>Leg</code>.</figcaption>
+</figure>
 
 <div class="note">
   <span class="lbl">Naming matters</span>
@@ -300,84 +315,121 @@
   Chr_Chest_02   →  Chest_02.png
   Chr_Chest_09   →  Chest_09.png</code></pre>
 
-<p>The window ships with 17 ready-made slots (Head, Mask, Head Accessory, Cape, Chest, Shoulder L/R, Biceps L/R, Forearm L/R, Elbow L/R, Glove L/R, Boot L/R). Rename them, change their Index, delete the ones you don't need, or press <em>Restore defaults</em> to bring the original list back.</p>
+<p>The window ships with 17 ready-made slots (Head, Mask, Head Accessory, Cape, Chest, Shoulder L/R, Biceps L/R, Forearm L/R, Elbow L/R, Glove L/R, Boot L/R). Rename them, change their Index, remove the ones you don't need with the trash button, or press <em>Reset to Defaults</em> to bring the original list back.</p>
 
 <!-- ============================================================ -->
 <h2 id="baker"><span class="num">6</span>The Baker tab</h2>
 
-<h3>Character</h3>
-<p>The root GameObject of your modular character. It must contain an <code>Animator</code> with a Humanoid Avatar somewhere in its hierarchy.</p>
+<p>The left column lists the eight sections of a bake. Click one to open it on the right. Each entry shows a one-line summary and a status dot: <strong>green</strong> when it is set up, <strong>amber</strong> when it needs attention, <strong>grey</strong> when it is optional and not in use. The footer below the list shows the bake status and the <em>Generate Sprite Library</em> button; after a bake it also shows the time and folder of the last bake, with a <em>Show in Project</em> button.</p>
 
-<h3>Modularity</h3>
+<h3>Character</h3>
+<p>The root GameObject of your modular character. It must contain an <code>Animator</code> with a Humanoid Avatar somewhere in its hierarchy; the field confirms it and counts the renderers it found.</p>
+
 <div class="tw"><table>
   <thead><tr><th>Mode</th><th>What it bakes</th></tr></thead>
   <tbody>
-    <tr><td><strong>Full Character And Weapon</strong></td><td>Uses the Slots list. Every part (or paired set) becomes its own sheet, plus one sheet per weapon and shield. This is the full paper-doll workflow.</td></tr>
-    <tr><td><strong>Only Weapon Modular</strong></td><td>Ignores the Slots entirely. Bakes the character exactly as currently assembled into a single <code>Body</code> sheet, plus one sheet per weapon and shield. Use this when only the equipment needs to change.</td></tr>
+    <tr><td><strong>Full Character</strong></td><td>Uses the Part Slots. Every part (or paired set) becomes its own sheet, plus one sheet per weapon and shield. This is the full paper-doll workflow.</td></tr>
+    <tr><td><strong>Weapons Only</strong></td><td>Ignores the Part Slots, which are greyed out in the section list. Bakes the character exactly as currently assembled into a single <code>Body</code> sheet, plus one sheet per weapon and shield. Use this when only the equipment needs to change.</td></tr>
   </tbody>
 </table></div>
 
-<h3>Slots</h3>
-<p>Covered in <a href="#concept">section 5</a>. Each row offers a name field, an Index field, a remove button and a drop area. Within a slot you can sort the list alphabetically or clear it.</p>
+<h3>Part Slots</h3>
+<p>Covered in <a href="#concept">section 5</a>. Each row has the slot name, its pieces, the pairing state, the Index and a remove button. Drop pieces on a row's <em>Drop</em> button; remove one with the − on its chip. Right-click a row to <em>Sort pieces</em> or <em>Clear pieces</em>. Above the table, <em>Filter slots</em> and <em>Hide empty</em> help with long lists, and the counter shows how many slots are filled and how many sprites they produce.</p>
 
 <h3>Animations</h3>
-<p>Drop one or more <code>AnimationClip</code> assets here — several at once if you like. Every clip is baked for every entry, so ten parts across four animations produces forty sheets.</p>
+<p>Drop one or more <code>AnimationClip</code> assets on the drop area — several at once if you like. Every clip is baked for every entry, so ten parts across four animations produces forty sheets. The table shows each clip's length.</p>
 
-<p>Each clip is tagged <strong>Loop</strong> or <strong>OneShot</strong>, and the tag changes how frame times are sampled:</p>
+<figure>
+  <img src="Images/baker-animations.png" alt="The Animations section with four clips of the Warrior example — Attack, Death, Idle and Walk — each with its length and a Loop / One-shot switch.">
+  <figcaption><b>Figure 4.</b> Animations. Idle and Walk are set to Loop; Attack and Death to One-shot.</figcaption>
+</figure>
+
+<p>Each clip is set to <strong>Loop</strong> or <strong>One-shot</strong>, and the choice changes how frame times are sampled:</p>
 <div class="tw"><table>
-  <thead><tr><th>Tag</th><th>Use for</th><th>Sampling</th></tr></thead>
+  <thead><tr><th>Playback</th><th>Use for</th><th>Sampling</th></tr></thead>
   <tbody>
     <tr><td><code>Loop</code></td><td>Idle, walk, run</td><td>Excludes the final instant, because frame 0 is the loop point. Prevents a duplicated frame and makes the cycle stitch seamlessly.</td></tr>
-    <tr><td><code>OneShot</code></td><td>Attack, death, cast</td><td>Includes the final instant, so the sprite holds the finished pose.</td></tr>
+    <tr><td><code>One-shot</code></td><td>Attack, death, cast</td><td>Includes the final instant, so the sprite holds the finished pose.</td></tr>
   </tbody>
 </table></div>
-<p>Clips arrive as <code>OneShot</code> when dropped; switch the ones that cycle to <code>Loop</code>.</p>
+<p>Clips arrive as <code>One-shot</code> when dropped; switch the ones that cycle to <code>Loop</code>.</p>
 
-<h3>Weapons / Shields</h3>
-<p>Drop weapon and shield GameObjects here. Each becomes its own sheet and is filed under a <code>weapon/</code> or <code>shield/</code> subfolder. They are included in the shared framing calculation, so a long spear will not be clipped.</p>
+<h3>Weapons &amp; Shields</h3>
+<p>Drop weapon and shield GameObjects on their drop areas. Each becomes its own sheet and is filed under a <code>weapon/</code> or <code>shield/</code> subfolder. They are included in the shared framing calculation, so a long spear will not be clipped. Both lists can be sorted or cleared.</p>
+
+<figure>
+  <img src="Images/baker-weapons-shields.png" alt="The Weapons and Shields section with the Warrior's sword in the Weapons list and an empty Shields list.">
+  <figcaption><b>Figure 5.</b> Weapons &amp; Shields, side by side.</figcaption>
+</figure>
 
 <h3>Output</h3>
 <div class="tw"><table>
   <thead><tr><th>Setting</th><th>Meaning</th></tr></thead>
   <tbody>
-    <tr><td><strong>Sprites folder</strong></td><td>Destination folder. Keep it inside <code>Assets/</code> so Unity imports the PNGs; <em>Browse</em> converts an absolute path automatically.</td></tr>
-    <tr><td><strong>Split by direction</strong></td><td>Off: one sheet containing every direction. On: one strip file per direction, named with the compass direction.</td></tr>
-    <tr><td><strong>Organize in folders</strong></td><td>Creates one subfolder per animation, keeping large libraries navigable.</td></tr>
+    <tr><td><strong>Folder</strong></td><td>Destination folder. Keep it inside <code>Assets/</code> so Unity imports the PNGs; <em>Browse…</em> converts an absolute path automatically, and a warning appears if the folder is outside the project.</td></tr>
+    <tr><td><strong>Split by Direction</strong></td><td>Off: one sheet containing every direction. On: one strip file per direction, named with the compass direction (see <a href="#directions">Direction order</a>).</td></tr>
+    <tr><td><strong>Folder per Clip</strong></td><td>Creates one subfolder per animation, keeping large libraries navigable. Weapons, shields and shadows go in their own subfolders.</td></tr>
   </tbody>
 </table></div>
+<p>The <em>Files written</em> card shows how many files the bake will produce and what their paths will look like, before you press Generate.</p>
 
 <figure>
-  <img src="Images/doc3.png" alt="Lower half of the Baker tab showing the end of the slot list, the Animations section, Weapons and Shields, the Output settings and the Generate button.">
-  <figcaption><b>Figure 2.</b> The lower half of the Baker tab: Animations, Weapons / Shields, Output, and the Generate button.</figcaption>
+  <img src="Images/baker-output.png" alt="The Output section with the folder field, Split by Direction off, Folder per Clip on, and the Files written card listing example paths.">
+  <figcaption><b>Figure 6.</b> Output, with a preview of the files a bake will write.</figcaption>
 </figure>
 
 <!-- ============================================================ -->
-<h2 id="advanced"><span class="num">7</span>Advanced options (bake)</h2>
+<h2 id="camera"><span class="num">7</span>Camera, style &amp; quality</h2>
 
-<p>Sensible defaults are already set; open this section when you need to change the camera, the sheet resolution or the shadow.</p>
+<p>Sensible defaults are already set; open these sections when you need to change the camera, the sheet resolution, the look or the shadow.</p>
 
+<h3>Camera &amp; Sheet</h3>
 <figure>
-  <img src="Images/doc4.png" alt="The Advanced options section expanded, showing projection, camera, grid, cell size, supersample, framing and ground shadow settings.">
-  <figcaption><b>Figure 3.</b> Advanced options, with the ground shadow pass enabled.</figcaption>
+  <img src="Images/baker-camera-sheet.png" alt="The Camera and Sheet section with projection, elevation, camera yaw, in place, directions, frames and cell size, next to a sheet layout diagram showing the final sheet size.">
+  <figcaption><b>Figure 7.</b> Camera &amp; Sheet. The layout card on the right shows the grid and the final sheet size as you change the settings.</figcaption>
 </figure>
 
 <div class="tw"><table>
   <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td><strong>Projection</strong></td><td class="c-def">Isometric</td><td>Chooses the camera angle preset. <code>Isometric</code> for classic 2:1 iso; <code>Top Down</code> for a steeper overhead view.</td></tr>
-    <tr><td><strong>Iso / TopDown Elevation</strong></td><td class="c-def">30 / 60</td><td>Camera pitch in degrees. Only the field for the active projection is shown; each projection remembers its own value, so switching back and forth never loses a calibrated angle.</td></tr>
-    <tr><td><strong>Camera Yaw</strong></td><td class="c-def">45</td><td>Camera rotation around the vertical axis. Shared by both projections. 45° is the classic isometric angle.</td></tr>
-    <tr><td><strong>Directions</strong></td><td class="c-def">8</td><td>How many facings to render. The character is rotated evenly through a full turn; 8 gives the usual eight-way movement.</td></tr>
-    <tr><td><strong>Frames</strong></td><td class="c-def">16</td><td>Frames sampled per animation, per direction.</td></tr>
+    <tr><td><strong>Projection</strong></td><td class="c-def">Isometric</td><td>Chooses the camera angle preset. <code>Isometric</code> for classic 2:1 iso; <code>Top-Down</code> for a steeper overhead view.</td></tr>
+    <tr><td><strong>Elevation</strong></td><td class="c-def">30 / 60</td><td>Camera pitch in degrees, 0–90. Each projection remembers its own value, so switching back and forth never loses a calibrated angle.</td></tr>
+    <tr><td><strong>Camera Yaw</strong></td><td class="c-def">45</td><td>Camera rotation around the vertical axis, −180 to 180. Shared by both projections. 45° is the classic isometric angle.</td></tr>
     <tr><td><strong>In Place</strong></td><td class="c-def">On</td><td>Pins the character to its start position each frame, so root motion does not drift the sprite out of the cell.</td></tr>
-    <tr><td><strong>Cell Width / Height</strong></td><td class="c-def">128 / 256</td><td>Pixel size of one frame. The sheet is <code>Frames × Cell Width</code> by <code>Directions × Cell Height</code>.</td></tr>
-    <tr><td><strong>Supersample (SSAA)</strong></td><td class="c-def">1</td><td>Renders at N× the cell resolution and downscales. Edges come out noticeably cleaner, and because the downscale works in premultiplied alpha there is no dark fringe. 2–4 is a good range; 8 is maximum quality and slowest. The factor is reduced automatically if it would exceed your GPU's texture limit.</td></tr>
-    <tr><td><strong>Framing</strong></td><td class="c-def">Original Size</td><td><code>Original Size</code> keeps the character's real proportions. <code>Resize To Fit</code> expands it to fill the cell.</td></tr>
-    <tr><td><strong>Padding</strong></td><td class="c-def">1.15</td><td>Breathing room around the character. Raise it if an animation reaches outside the frame.</td></tr>
-    <tr><td><strong>Background</strong></td><td class="c-def">Transparent</td><td>Sheet background color. Leave fully transparent for normal use.</td></tr>
-    <tr><td><strong>BakeStyle</strong></td><td class="c-def">None</td><td>Optional lighting and color profile — see <a href="#bakestyle">section 8</a>.</td></tr>
-    <tr><td><strong>Bake Ground Shadow</strong></td><td class="c-def">Off</td><td>Produces an extra <code>shadow</code> sheet: the whole assembled character flattened onto the ground. Draw it beneath the character layers at runtime.</td></tr>
-    <tr><td><strong>Shadow Color / Strength / Flatten / Blur</strong></td><td class="c-def">black / 0.45 / 0.04 / 2</td><td>Shadow tint, opacity, how flat the silhouette is squashed, and how soft its edge is.</td></tr>
+    <tr><td><strong>Directions</strong></td><td class="c-def">8</td><td>How many facings to render, 1–16. The character is rotated evenly through a full turn; 8 gives the usual eight-way movement.</td></tr>
+    <tr><td><strong>Frames</strong></td><td class="c-def">16</td><td>Frames sampled per animation, per direction, 1–64.</td></tr>
+    <tr><td><strong>Cell Size</strong></td><td class="c-def">128 × 256</td><td>Pixel size of one frame. The sheet is <code>Frames × width</code> by <code>Directions × height</code>.</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Style &amp; Shadow</h3>
+<figure>
+  <img src="Images/baker-style-shadow.png" alt="The Style and Shadow section with a Bake Style asset assigned and the ground shadow enabled with color, strength, flatten and blur settings.">
+  <figcaption><b>Figure 8.</b> Style &amp; Shadow, with a Bake Style assigned and the ground shadow on.</figcaption>
+</figure>
+
+<div class="tw"><table>
+  <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Bake Style</strong></td><td class="c-def">None</td><td>Optional lighting and color profile — see <a href="#bakestyle">section 8</a>. <em>Select</em> selects the asset so you can edit it in the Inspector.</td></tr>
+    <tr><td><strong>Ground Shadow</strong></td><td class="c-def">Off</td><td>Produces an extra <code>shadow</code> sheet per clip: the whole assembled character flattened onto the ground. Draw it beneath the character layers at runtime.</td></tr>
+    <tr><td><strong>Color / Strength / Flatten / Blur</strong></td><td class="c-def">black / 0.45 / 0.04 / 2</td><td>Shadow tint, opacity (0–1), how flat the silhouette is squashed (0.01–0.3), and how soft its edge is (0–8 px).</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Quality &amp; Framing</h3>
+<figure>
+  <img src="Images/baker-quality-framing.png" alt="The Quality and Framing section with the Original Size framing selected, supersample at 2, padding 1.15 and a transparent background.">
+  <figcaption><b>Figure 9.</b> Quality &amp; Framing.</figcaption>
+</figure>
+
+<div class="tw"><table>
+  <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Framing</strong></td><td class="c-def">Original Size</td><td><code>Original Size</code> sizes the camera from the character's largest dimension and keeps its real proportions. <code>Resize To Fit</code> gives the tightest fit into the cell across every direction.</td></tr>
+    <tr><td><strong>Supersample</strong></td><td class="c-def">1</td><td>Renders at N× the cell resolution and downscales. Edges come out noticeably cleaner, and because the downscale works in premultiplied alpha there is no dark fringe. 2–4 is a good range; 8 is maximum quality and slowest. The factor is reduced automatically if it would exceed your GPU's texture limit.</td></tr>
+    <tr><td><strong>Padding</strong></td><td class="c-def">1.15</td><td>Breathing room around the character. Raise it if an animation reaches outside the frame. It must be above 0: the field keeps the last valid value if you type 0 or a negative number.</td></tr>
+    <tr><td><strong>Background</strong></td><td class="c-def">Transparent</td><td>Sheet background color. Leave alpha at 0 for normal use.</td></tr>
   </tbody>
 </table></div>
 
@@ -391,11 +443,11 @@
 
 <p>A Bake Style is a reusable look: lighting, rim light, color grading and outline. Assign the same asset to every bake and your whole library stays visually consistent.</p>
 
-<p>Create one with <strong>Assets ▸ Create ▸ Paper Doll Machine ▸ Bake Style</strong>, then drop it into the <em>BakeStyle</em> field in Advanced options.</p>
+<p>Create one with <strong>Assets ▸ Create ▸ Paper Bird ▸ Paper Doll Machine ▸ Bake Style</strong>, then drop it into the <em>Bake Style</em> field in <em>Style &amp; Shadow</em>. The package includes one ready to use in <code>Paper Doll Machine/BakeStyle</code>.</p>
 
 <figure>
   <img src="Images/BakeStyle.png" alt="The Bake Style asset shown in the Inspector, with lighting, rim light, material override, color and outline sections.">
-  <figcaption><b>Figure 4.</b> A Bake Style asset in the Inspector.</figcaption>
+  <figcaption><b>Figure 10.</b> A Bake Style asset in the Inspector.</figcaption>
 </figure>
 
 <h3>Lighting — 3-point (key / fill / rim)</h3>
@@ -425,51 +477,52 @@
 </div>
 
 <!-- ============================================================ -->
-<h2 id="preview"><span class="num">9</span>The Preview tab</h2>
+<h2 id="preview"><span class="num">9</span>The Preview Sheets tab</h2>
 
-<p>The Preview tab assembles baked sheets back into a character so you can check alignment and timing without leaving Unity.</p>
+<p>The Preview Sheets tab assembles baked sheets back into a character so you can check alignment and timing without leaving Unity.</p>
 
 <figure>
-  <img src="Images/doc5.png" alt="The Preview tab showing the sheet grid settings, the layer list, direction and frame sliders, Play button and the checkerboard viewport.">
-  <figcaption><b>Figure 5.</b> The Preview tab, ready to receive baked sheets.</figcaption>
+  <img src="Images/preview-sheets.png" alt="The Preview Sheets tab with five Warrior Attack layers stacked from back to front, the direction stepper on Row 6 of 8, the sheet grid set to 8 directions and 16 frames, and the composite shown at 3x zoom.">
+  <figcaption><b>Figure 11.</b> The Preview Sheets tab with the Warrior's Attack sheets, shown at 3× zoom.</figcaption>
 </figure>
 
 <ol class="steps">
-  <li><strong>Match the grid</strong>
-     — press <em>= Baker</em> to copy Directions, Frames and cell size straight from the Baker tab.</li>
   <li><strong>Drop your sheets</strong>
-     into the Layers list, several at once.</li>
+     on the <em>Drop baked sheets</em> area, several at once.</li>
+  <li><strong>Set the Sheet Grid</strong>
+     — Directions and Frames as you baked them. The cell size is read from the sheets themselves and shown in the Composite bar; if the layers have different sizes, the bar says so.</li>
   <li><strong>Order the layers</strong>
-     with ↑ / ↓. The list order is the draw order: <strong>top of the list draws behind</strong>, bottom draws in front. The checkbox hides a layer without removing it.</li>
+     by dragging the handle on the left of each row. The list is the draw order: <strong>Back at the top</strong>, Front at the bottom. The eye hides a layer without removing it; the trash button removes it, and <em>Clear</em> removes them all.</li>
   <li><strong>Inspect</strong>
-     — step through directions with ‹ / › or the slider, scrub frames, or press <em>Play</em> and set the FPS.</li>
+     — step through the rows with ◀ ▶ (the label shows <em>Row N of M</em>), step frames with the arrows next to Play, click the frame strip to jump to a frame, or press <em>Play</em> and set the FPS.</li>
 </ol>
 
-<p>Toggle the checkerboard background off to judge the sprite against a solid color of your choosing.</p>
+<p>Use the zoom buttons in the Composite bar to choose how the sprite is shown: <strong>1×</strong> is real size, one sheet pixel per screen pixel, and is the default. <strong>2×–4×</strong> enlarge it with sharp pixels, and <strong>Fit</strong> scales it to fill the viewer. Turn the checkerboard off to judge the sprite against a solid color of your choosing.</p>
 
 <!-- ============================================================ -->
 <h2 id="output"><span class="num">10</span>Output reference</h2>
 
 <h3>Sheet layout</h3>
 <p>A sheet is a grid of cells. <strong>Frames run left to right; directions run top to bottom</strong>, with direction 0 on the top row.</p>
-<pre><code>sheet width  = Frames     × Cell Width
-sheet height = Directions × Cell Height</code></pre>
+<pre><code>sheet width  = Frames     × Cell width
+sheet height = Directions × Cell height</code></pre>
 <p>With the defaults (16 frames, 8 directions, 128×256 cells) that is a 2048 × 2048 sheet.</p>
 
-<h3>Direction order</h3>
-<p>Row 0 is South, and rows continue counter-clockwise:</p>
+<h3 id="directions">Direction order</h3>
+<p>Row 0 is the character as it stands in your scene. Each following row turns it by <code>360 ÷ Directions</code> degrees around its vertical axis, clockwise seen from above.</p>
+<p>When <em>Split by Direction</em> is on, each row's file is named with a compass direction:</p>
 <pre><code>row 0  South        row 4  North
 row 1  SouthWest    row 5  NorthEast
 row 2  West         row 6  East
 row 3  NorthWest    row 7  SouthEast</code></pre>
-<p>These names are used in filenames when <em>Split by direction</em> is on. If you bake more directions than there are names, the extras are numbered <code>dir8</code>, <code>dir9</code>, and so on.</p>
+<p>These names describe the sprites when you bake <strong>8 directions</strong> with row 0 facing the camera. To make the character face the camera, set its Y rotation to <code>Camera Yaw + 180</code> before baking (225 with the default yaw of 45). With another number of directions, go by the row number. Rows past the eighth are numbered <code>dir8</code>, <code>dir9</code>, and so on.</p>
 
 <h3>File names</h3>
 <pre><code>&lt;animation&gt;_&lt;entry&gt;.png                 e.g.  Walk_Chest_02.png
 &lt;animation&gt;_&lt;entry&gt;_&lt;Direction&gt;.png     e.g.  Walk_Chest_02_South.png   (split by direction)</code></pre>
 
 <h3>Folder structure</h3>
-<p>With <em>Organize in folders</em> enabled:</p>
+<p>With <em>Folder per Clip</em> enabled:</p>
 <pre><code>Assets/GeneratedSprites/
 ├─ Walk/
 │  ├─ Walk_Chest_02.png          ← body parts sit directly in the animation folder
@@ -505,38 +558,27 @@ row 3  NorthWest    row 7  SouthEast</code></pre>
 <p>Entry types are <code>piece</code>, <code>body</code>, <code>weapon</code>, <code>shield</code> and <code>shadow</code>.</p>
 
 <h3>Importing the sheets</h3>
-<p>Set the imported textures to <strong>Sprite (2D and UI)</strong> with <strong>Sprite Mode: Multiple</strong>, then slice them by cell size using your Cell Width and Cell Height. For crisp pixel results, set Filter Mode to <strong>Point</strong> and turn compression off.</p>
+<p>Set the imported textures to <strong>Sprite (2D and UI)</strong> with <strong>Sprite Mode: Multiple</strong>, then slice them by cell size using your cell width and height. For crisp pixel results, set Filter Mode to <strong>Point</strong> and turn compression off. If a sheet is larger than the texture's <em>Max Size</em> (2048 by default), raise Max Size so Unity keeps it at full resolution.</p>
 
 <!-- ============================================================ -->
 <h2 id="troubleshooting"><span class="num">11</span>Troubleshooting</h2>
 
-<p>The tool reports problems to the Unity Console. Each message below names its cause and fix.</p>
+<p>Most problems are caught before the bake starts: the footer lists them and the Generate button stays disabled until they are fixed (see Figure 2).</p>
 
 <div class="tw"><table>
-  <thead><tr><th>Console message</th><th>Cause &amp; fix</th></tr></thead>
+  <thead><tr><th>Footer message</th><th>Cause &amp; fix</th></tr></thead>
   <tbody>
-    <tr>
-      <td><code>The character requires an Animator (Humanoid Avatar).</code></td>
-      <td>No <code>Animator</code> was found on the character or its children, so animations cannot be sampled. Add one and set the model's Rig to <strong>Humanoid</strong>.</td>
-    </tr>
-    <tr>
-      <td><code>Set the character and at least one animation.</code></td>
-      <td>The Character field is empty, or no clip was added. Both are required.</td>
-    </tr>
-    <tr>
-      <td><code>No entries to bake (fill in the slots or the weapons).</code></td>
-      <td>Nothing was dropped into the slots, weapons or shields, so there is nothing to render. In <em>Only Weapon Modular</em> mode, check that the character has visible renderers.</td>
-    </tr>
-    <tr>
-      <td><code>The character has no renderers.</code></td>
-      <td>The assigned object contains no renderers at all. Confirm you assigned the character root and not an empty parent.</td>
-    </tr>
-    <tr>
-      <td><code>Folder outside Assets/ — the PNGs will not be imported as assets</code></td>
-      <td>The output folder is outside the project. The files are still written, but Unity will not import them. Choose a folder inside <code>Assets/</code>.</td>
-    </tr>
+    <tr><td><code>Assign a character</code></td><td>The Character field is empty. Drag the character's root GameObject into it.</td></tr>
+    <tr><td><code>Add an Animator to the character</code></td><td>No <code>Animator</code> was found on the character or its children, so animations cannot be sampled. Add one and set the model's Rig to <strong>Humanoid</strong>.</td></tr>
+    <tr><td><code>Add at least one animation clip</code></td><td>The Animations list is empty, or its clips are missing.</td></tr>
+    <tr><td><code>The character has no renderers</code></td><td>The assigned object contains no renderers at all. Confirm you assigned the character root and not an empty parent.</td></tr>
+    <tr><td><code>Fill at least one slot, or add a weapon or shield</code></td><td>Nothing was dropped into the Part Slots, Weapons or Shields, so there is nothing to render. In <em>Weapons Only</em> mode, check that the character has visible renderers.</td></tr>
+    <tr><td><code>Choose an output folder</code></td><td>The Folder field in Output is empty.</td></tr>
+    <tr><td><code>Set Padding above 0 (Quality &amp; Framing)</code></td><td>A padding of 0 or less gives the bake camera no size. Set it back to 1.15 or higher.</td></tr>
   </tbody>
 </table></div>
+
+<p>If the output folder is outside <code>Assets/</code>, the Output section shows a warning: the files are still written, but Unity will not import them.</p>
 
 <h3>Other symptoms</h3>
 <div class="tw"><table>
@@ -548,7 +590,10 @@ row 3  NorthWest    row 7  SouthEast</code></pre>
     <tr><td>Sprites look dark</td><td>Assign a Bake Style with <strong>Create Lights</strong> enabled; the bake then no longer depends on your scene lighting.</td></tr>
     <tr><td>Edges look jagged</td><td>Raise <strong>Supersample</strong> to 2–4.</td></tr>
     <tr><td>Character drifts out of frame during an animation</td><td>Enable <strong>In Place</strong> to cancel root motion.</td></tr>
-    <tr><td>The looping animation stutters</td><td>Tag the clip <code>Loop</code> instead of <code>OneShot</code> so the duplicated final frame is dropped.</td></tr>
+    <tr><td>The looping animation stutters</td><td>Set the clip to <code>Loop</code> instead of <code>One-shot</code> so the duplicated final frame is dropped.</td></tr>
+    <tr><td>Direction names in split files don't match the sprites</td><td>Row 0 is the character as it stands in the scene. Rotate it to face the camera before baking — see <a href="#directions">Direction order</a>.</td></tr>
+    <tr><td>The preview looks blurry</td><td>Use <strong>1×</strong> to <strong>4×</strong> zoom instead of <strong>Fit</strong>; whole-number zooms keep pixels sharp.</td></tr>
+    <tr><td>The preview looks stretched</td><td>Directions and Frames in the Sheet Grid don't match the sheet. Set them to the values you baked with.</td></tr>
   </tbody>
 </table></div>
 
@@ -557,6 +602,9 @@ row 3  NorthWest    row 7  SouthEast</code></pre>
 
 <h4>Does this work with any modular character?</h4>
 <p>Yes, provided the parts are separate child GameObjects that can be toggled and the rig is Humanoid. The tool makes no assumptions about which character pack you use.</p>
+
+<h4>Do other objects in my scene end up in the sprites?</h4>
+<p>No. Only the character, weapons and shields you assign are rendered; every other renderer and terrain in the open scenes is hidden for the duration of the bake and shown again afterwards. Scene lights still light the character unless a Bake Style creates its own.</p>
 
 <h4>Do I have to re-bake everything when I add one new part?</h4>
 <p>No. Bake the new part on its own; because framing is deterministic, it will line up with the sheets you already have — as long as the base assembly and the bake settings are unchanged. Make a note of the settings you used so a later bake can reproduce them exactly.</p>
